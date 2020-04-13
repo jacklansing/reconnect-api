@@ -1,0 +1,1 @@
+TRUNCATE reconnect_users RESTART IDENTITY CASCADE;
