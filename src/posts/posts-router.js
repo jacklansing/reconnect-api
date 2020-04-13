@@ -34,7 +34,7 @@ postsRouter
       location
     };
 
-    for (const [key, value] in Object.entries(newPost)) {
+    for (const [key, value] of Object.entries(newPost)) {
       if (value == null) {
         return res.status(400).json({
           error: `Missing '${key}' in request body`
@@ -55,8 +55,6 @@ postsRouter
     } catch (e) {
       next(e);
     }
-
-    res.send('ok');
   });
 
 module.exports = postsRouter;
