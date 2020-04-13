@@ -8,10 +8,10 @@ CREATE TYPE device_type AS ENUM (
 );
 
 CREATE TYPE device_condition AS ENUM (
-    'Very good',
-    'Good',
-    'Okay',
-    'Damaged'
+    'very good',
+    'good',
+    'okay',
+    'damaged'
 );
 
 CREATE TYPE device_location AS ENUM (
