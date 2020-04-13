@@ -1,4 +1,5 @@
-const xss = require(xss);
+const xss = require('xss');
+
 const PostsService = {
   getAllPosts(db) {
     return db('reconnect_posts').select('*');
