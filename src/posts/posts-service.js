@@ -26,7 +26,7 @@ const PostsService = {
       user_id: post.user_id
     };
   },
-  getSearchPosts(db, searchText, location) {
+  getSearchPosts(db, searchText, location = 'Albany, NY') {
     return db('reconnect_posts')
       .where({ location })
       .where('title', 'ilike', `%${searchText}%`)
