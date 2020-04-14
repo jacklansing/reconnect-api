@@ -29,8 +29,8 @@ const PostsService = {
   getSearchPosts(db, searchText, location) {
     return db('reconnect_posts')
       .where({ location })
-      .where('title', 'like', `%${searchText}%`)
-      .orWhere('description', 'like', `%${searchText}%`);
+      .where('title', 'ilike', `%${searchText}%`)
+      .orWhere('description', 'ilike', `%${searchText}%`);
   }
 };
 
