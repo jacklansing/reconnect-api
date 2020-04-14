@@ -37,7 +37,7 @@ threadsRouter
   .get(async (req, res, next) => {
     const userId = req.user.id;
     try {
-      const threads = await ThreadsService.getThreadsByUser(
+      const threads = await ThreadsService.getLatestThreadMessage(
         req.app.get('db'),
         userId
       );
