@@ -33,6 +33,18 @@ threadsRouter
     } catch (e) {
       next(e);
     }
+  })
+  .get(async (req, res, next) => {
+    const userId = req.user.id;
+    try {
+      const threads = await ThreadsService.getThreadsByUser(
+        req.app.get('db'),
+        userId
+      );
+      res.json(threads);
+    } catch (e) {
+      next(e);
+    }
   });
 
 module.exports = threadsRouter;
