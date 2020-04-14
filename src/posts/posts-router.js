@@ -1,12 +1,14 @@
 const express = require('express');
 const path = require('path');
 const PostsService = require('./posts-service');
+const { requireAuth } = require('../middleware/jwt-auth');
 
 const postsRouter = express.Router();
 const bodyParser = express.json();
 
 postsRouter
   .route('/')
+  .all(requireAuth)
   .get(async (req, res, next) => {
     try {
       const posts = await PostsService.getAllPosts(req.app.get('db'));
@@ -16,17 +18,9 @@ postsRouter
     }
   })
   .post(bodyParser, async (req, res, next) => {
-    const {
-      user_id,
-      title,
-      description,
-      device,
-      condition,
-      location
-    } = req.body;
+    const { title, description, device, condition, location } = req.body;
 
     const newPost = {
-      user_id,
       title,
       description,
       device,
@@ -42,8 +36,7 @@ postsRouter
       }
     }
 
-    //TODO: Grab user of request body once authentication middleware is implemented
-    // For now we'll pick up the id artificially above
+    newPost.user_id = req.user.id;
 
     try {
       const post = await PostsService.insertPost(req.app.get('db'), newPost);
