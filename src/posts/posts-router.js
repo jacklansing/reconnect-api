@@ -15,20 +15,19 @@ postsRouter
     if (!search && !location) {
       try {
         const posts = await PostsService.getAllPosts(req.app.get('db'));
-        res.json(posts);
+        res.json(posts.map(post => PostsService.serializePost(post)));
       } catch (e) {
         next(e);
       }
     }
 
     try {
-      console.log('location is', location);
       const posts = await PostsService.getSearchPosts(
         req.app.get('db'),
         search,
         location
       );
-      res.json(posts);
+      res.json(posts.map(post => PostsService.serializePost(post)));
     } catch (e) {
       next(e);
     }

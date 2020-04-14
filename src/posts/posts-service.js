@@ -26,9 +26,12 @@ const PostsService = {
       user_id: post.user_id
     };
   },
-  getSearchPosts(db, searchText, location = 'Albany, NY') {
-    return db('reconnect_posts')
-      .where({ location })
+  getSearchPosts(db, searchText, location) {
+    let queryBuilder = db('reconnect_posts');
+    if (location) {
+      queryBuilder.where({ location });
+    }
+    return queryBuilder
       .where('title', 'ilike', `%${searchText}%`)
       .orWhere('description', 'ilike', `%${searchText}%`);
   }
