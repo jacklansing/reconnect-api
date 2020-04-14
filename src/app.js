@@ -8,6 +8,7 @@ const usersRouter = require('./users/users-router');
 const authRouter = require('./auth/auth-router');
 const postsRouter = require('./posts/posts-router');
 const messagesRouter = require('./messages/messages-router');
+const threadsRouter = require('./messages-threads/threads-router');
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use('/api/users', usersRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/posts', postsRouter);
 app.use('/api/messages', messagesRouter);
+app.use('/api/threads', threadsRouter);
 
 app.get('/', (req, res) => {
   res.send('Hello, world!');
