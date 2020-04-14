@@ -21,12 +21,12 @@ const ThreadsService = {
     return db
       .raw(
         `SELECT DISTINCT ON (m.thread_id) 
-      m.thread_id, m.content, m.author_id, m.date_created
-      FROM reconnect_messages m 
-      INNER JOIN reconnect_messages_threads t  
-      ON m.thread_id = t.id 
-      WHERE t.recipient_id = ? OR t.author_id = ? 
-      ORDER BY m.thread_id, m.date_created DESC`,
+        m.thread_id, m.content, m.author_id, m.date_created, u.display_name
+        FROM reconnect_messages m INNER JOIN reconnect_messages_threads t  
+        ON m.thread_id = t.id 
+        INNER JOIN reconnect_users u ON m.author_id = u.id 
+        WHERE t.recipient_id = ? OR t.author_id = ? 
+        ORDER BY m.thread_id, m.date_created DESC;`,
         [id, id]
       )
       .then(result => result.rows);
