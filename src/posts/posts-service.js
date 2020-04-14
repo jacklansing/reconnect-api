@@ -25,6 +25,12 @@ const PostsService = {
       date_created: post.date_created,
       user_id: post.user_id
     };
+  },
+  getSearchPosts(db, searchText, location) {
+    return db('reconnect_posts')
+      .where({ location })
+      .where('title', 'like', `%${searchText}%`)
+      .orWhere('description', 'like', `%${searchText}%`);
   }
 };
 

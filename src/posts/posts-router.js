@@ -10,8 +10,24 @@ postsRouter
   .route('/')
   .all(requireAuth)
   .get(async (req, res, next) => {
+    const { search, location } = req.query;
+
+    if (!search && !location) {
+      try {
+        const posts = await PostsService.getAllPosts(req.app.get('db'));
+        res.json(posts);
+      } catch (e) {
+        next(e);
+      }
+    }
+
     try {
-      const posts = await PostsService.getAllPosts(req.app.get('db'));
+      console.log('location is', location);
+      const posts = await PostsService.getSearchPosts(
+        req.app.get('db'),
+        search,
+        location
+      );
       res.json(posts);
     } catch (e) {
       next(e);
@@ -49,5 +65,4 @@ postsRouter
       next(e);
     }
   });
-
 module.exports = postsRouter;
