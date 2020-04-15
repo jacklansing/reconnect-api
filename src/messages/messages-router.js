@@ -21,7 +21,6 @@ messagesRouter
     }
 
     const author_id = req.user.id;
-
     newMessage.author_id = author_id;
 
     try {
@@ -30,6 +29,10 @@ messagesRouter
         newMessage
       );
 
+      // Get display name of the person entering new message.
+      // For use client-side
+      const display_name = req.user.display_name;
+      message.display_name = display_name;
       res
         .status(201)
         .location(path.posix.join(req.originalUrl, `/${message.id}`))

@@ -17,7 +17,8 @@ const MessagesService = {
       content: xss(message.content),
       thread_id: message.thread_id,
       author_id: message.author_id,
-      date_created: message.date_created
+      date_created: message.date_created,
+      display_name: xss(message.display_name)
     };
   }
 };
