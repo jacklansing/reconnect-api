@@ -47,4 +47,27 @@ threadsRouter
     }
   });
 
+threadsRouter
+  .route('/:thread_id')
+  .all(requireAuth)
+  .get(async (req, res, next) => {
+    const { thread_id } = req.params;
+    try {
+      const messages = await ThreadsService.getAllThreadMessages(
+        req.app.get('db'),
+        thread_id
+      );
+
+      if (!messages) {
+        res.status(400).send({
+          error: `No messages found for thread with id ${thread_id}`
+        });
+      }
+
+      res.json(messages);
+    } catch (e) {
+      next(e);
+    }
+  });
+
 module.exports = threadsRouter;
