@@ -27,13 +27,27 @@ const PostsService = {
     };
   },
   getSearchPosts(db, searchText, location) {
-    let queryBuilder = db('reconnect_posts');
-    if (location) {
-      queryBuilder.where({ location });
-    }
-    return queryBuilder
-      .where('title', 'ilike', `%${searchText}%`)
-      .orWhere('description', 'ilike', `%${searchText}%`);
+    return db('reconnect_posts')
+      .where(function () {
+        this.where('title', 'ilike', `%${searchText}%`).orWhere(
+          'description',
+          'ilike',
+          `%${searchText}%`
+        );
+      })
+      .where({ location });
+  },
+  getSearchPostsByLocation(db, location) {
+    return db('reconnect_posts').where({ location });
+  },
+  getSearchPostsByText(db, searchText) {
+    return db('reconnect_posts').where(function () {
+      this.where('title', 'ilike', `%${searchText}%`).orWhere(
+        'description',
+        'ilike',
+        `%${searchText}%`
+      );
+    });
   }
 };
 
