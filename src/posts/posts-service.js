@@ -14,7 +14,8 @@ const PostsService = {
           rp.date_modified, 
           ru.display_name as post_author
         FROM reconnect_posts rp 
-        INNER JOIN reconnect_users ru ON rp.user_id = ru.id;`
+        INNER JOIN reconnect_users ru ON rp.user_id = ru.id 
+        ORDER BY rp.date_modified DESC;`
       )
       .then(result => result.rows);
   },
@@ -38,6 +39,9 @@ const PostsService = {
       .where({ id })
       .update(updatedPost)
       .then(rowsAffected => rowsAffected[0]);
+  },
+  deletePost(db, id) {
+    return db('reconnect_posts').where({ id }).delete();
   },
   serializePost(post) {
     return {
@@ -70,7 +74,8 @@ const PostsService = {
         FROM reconnect_posts rp 
         INNER JOIN reconnect_users ru ON rp.user_id = ru.id
         WHERE (rp.title ILIKE ? OR rp.description ILIKE ?)
-        AND rp.location = ?`,
+        AND rp.location = ? 
+        ORDER BY rp.date_modified DESC;`,
         [searchText, searchText, location]
       )
       .then(result => result.rows);
@@ -90,7 +95,8 @@ const PostsService = {
         ru.display_name as post_author
       FROM reconnect_posts rp 
       INNER JOIN reconnect_users ru ON rp.user_id = ru.id
-      WHERE rp.location = ?`,
+      WHERE rp.location = ? 
+      ORDER BY rp.date_modified DESC;`,
         location
       )
       .then(result => result.rows);
@@ -111,7 +117,8 @@ const PostsService = {
         ru.display_name as post_author
       FROM reconnect_posts rp 
       INNER JOIN reconnect_users ru ON rp.user_id = ru.id
-      WHERE rp.title ILIKE ? OR rp.description ILIKE ?`,
+      WHERE rp.title ILIKE ? OR rp.description ILIKE ? 
+      ORDER BY rp.date_modified DESC;`,
         [searchText, searchText]
       )
       .then(result => result.rows);

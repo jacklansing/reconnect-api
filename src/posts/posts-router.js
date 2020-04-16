@@ -161,6 +161,18 @@ postsRouter
   });
 
 postsRouter
+  .route('/:post_id')
+  .all(requireAuth)
+  .delete(async (req, res, next) => {
+    try {
+      PostsService.deletePost(req.app.get('db'), req.param.post_id);
+      res.status(204).end();
+    } catch (e) {
+      next(e);
+    }
+  });
+
+postsRouter
   .route('/user-posts')
   .all(requireAuth)
   .get(async (req, res, next) => {
