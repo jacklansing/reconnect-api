@@ -2,7 +2,21 @@ const xss = require('xss');
 
 const PostsService = {
   getAllPosts(db) {
-    return db('reconnect_posts').select('*');
+    return db
+      .raw(
+        `SELECT 
+          rp.id, rp.title, 
+          rp.description, 
+          rp.device, 
+          rp.condition, 
+          rp.location, 
+          rp.date_created, 
+          rp.date_modified, 
+          ru.display_name as post_author
+        FROM reconnect_posts rp 
+        INNER JOIN reconnect_users ru ON rp.user_id = ru.id;`
+      )
+      .then(result => result.rows);
   },
   getById(db, id) {
     return db('reconnect_posts').where({ id }).first();
@@ -30,6 +44,7 @@ const PostsService = {
       id: post.id,
       title: xss(post.title),
       description: xss(post.description),
+      post_author: xss(post.post_author),
       device: post.device,
       condition: post.condition,
       location: post.location,
@@ -39,27 +54,67 @@ const PostsService = {
     };
   },
   getSearchPosts(db, searchText, location) {
-    return db('reconnect_posts')
-      .where(function () {
-        this.where('title', 'ilike', `%${searchText}%`).orWhere(
-          'description',
-          'ilike',
-          `%${searchText}%`
-        );
-      })
-      .where({ location });
+    searchText = `%${searchText}%`;
+    return db
+      .raw(
+        `SELECT 
+          rp.id, 
+          rp.title, 
+          rp.description, 
+          rp.device, 
+          rp.condition, 
+          rp.location, 
+          rp.date_created, 
+          rp.date_modified, 
+          ru.display_name as post_author
+        FROM reconnect_posts rp 
+        INNER JOIN reconnect_users ru ON rp.user_id = ru.id
+        WHERE (rp.title ILIKE ? OR rp.description ILIKE ?)
+        AND rp.location = ?`,
+        [searchText, searchText, location]
+      )
+      .then(result => result.rows);
   },
   getSearchPostsByLocation(db, location) {
-    return db('reconnect_posts').where({ location });
+    return db
+      .raw(
+        `SELECT 
+        rp.id, 
+        rp.title, 
+        rp.description, 
+        rp.device, 
+        rp.condition, 
+        rp.location, 
+        rp.date_created, 
+        rp.date_modified, 
+        ru.display_name as post_author
+      FROM reconnect_posts rp 
+      INNER JOIN reconnect_users ru ON rp.user_id = ru.id
+      WHERE rp.location = ?`,
+        location
+      )
+      .then(result => result.rows);
   },
   getSearchPostsByText(db, searchText) {
-    return db('reconnect_posts').where(function () {
-      this.where('title', 'ilike', `%${searchText}%`).orWhere(
-        'description',
-        'ilike',
-        `%${searchText}%`
-      );
-    });
+    searchText = `%${searchText}%`;
+    return db
+      .raw(
+        `SELECT 
+        rp.id, 
+        rp.title, 
+        rp.description, 
+        rp.device, 
+        rp.condition, 
+        rp.location, 
+        rp.date_created, 
+        rp.date_modified, 
+        ru.display_name as post_author
+      FROM reconnect_posts rp 
+      INNER JOIN reconnect_users ru ON rp.user_id = ru.id
+      WHERE rp.title ILIKE ? OR rp.description ILIKE ?`,
+        [searchText, searchText]
+      )
+      .then(result => result.rows);
   }
 };
 
