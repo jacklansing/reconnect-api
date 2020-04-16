@@ -1,0 +1,1 @@
+ALTER TABLE reconnect_posts ADD COLUMN date_modified TIMESTAMPTZ DEFAULT now() NOT NULL;

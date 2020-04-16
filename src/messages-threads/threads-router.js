@@ -59,7 +59,7 @@ threadsRouter
       );
 
       if (!messages) {
-        res.status(400).send({
+        res.status(404).json({
           error: `No messages found for thread with id ${thread_id}`
         });
       }

@@ -2,10 +2,32 @@ const xss = require('xss');
 
 const PostsService = {
   getAllPosts(db) {
-    return db('reconnect_posts').select('*');
+    return db
+      .raw(
+        `SELECT 
+          rp.id, 
+          rp.user_id,
+          rp.title, 
+          rp.description, 
+          rp.device, 
+          rp.condition, 
+          rp.location, 
+          rp.date_created, 
+          rp.date_modified, 
+          ru.display_name as post_author
+        FROM reconnect_posts rp 
+        INNER JOIN reconnect_users ru ON rp.user_id = ru.id 
+        ORDER BY rp.date_modified DESC;`
+      )
+      .then(result => result.rows);
   },
   getById(db, id) {
     return db('reconnect_posts').where({ id }).first();
+  },
+  getPostsByUserId(db, user_id) {
+    return db('reconnect_posts')
+      .where({ user_id })
+      .orderBy('date_modified', 'desc');
   },
   insertPost(db, newPost) {
     return db('reconnect_posts')
@@ -14,40 +36,97 @@ const PostsService = {
       .then(([post]) => post)
       .then(post => PostsService.getById(db, post.id));
   },
+  updatePost(db, id, updatedPost) {
+    return db('reconnect_posts')
+      .where({ id })
+      .update(updatedPost)
+      .then(rowsAffected => rowsAffected[0]);
+  },
+  deletePost(db, id) {
+    return db('reconnect_posts').where({ id }).del();
+  },
   serializePost(post) {
     return {
       id: post.id,
       title: xss(post.title),
       description: xss(post.description),
+      post_author: xss(post.post_author),
       device: post.device,
       condition: post.condition,
       location: post.location,
       date_created: post.date_created,
-      user_id: post.user_id
+      user_id: post.user_id,
+      userCanEdit: post.userCanEdit
     };
   },
   getSearchPosts(db, searchText, location) {
-    return db('reconnect_posts')
-      .where(function () {
-        this.where('title', 'ilike', `%${searchText}%`).orWhere(
-          'description',
-          'ilike',
-          `%${searchText}%`
-        );
-      })
-      .where({ location });
+    searchText = `%${searchText}%`;
+    return db
+      .raw(
+        `SELECT 
+          rp.id, 
+          rp.user_id, 
+          rp.title, 
+          rp.description, 
+          rp.device, 
+          rp.condition, 
+          rp.location, 
+          rp.date_created, 
+          rp.date_modified, 
+          ru.display_name as post_author
+        FROM reconnect_posts rp 
+        INNER JOIN reconnect_users ru ON rp.user_id = ru.id
+        WHERE (rp.title ILIKE ? OR rp.description ILIKE ?)
+        AND rp.location = ? 
+        ORDER BY rp.date_modified DESC;`,
+        [searchText, searchText, location]
+      )
+      .then(result => result.rows);
   },
   getSearchPostsByLocation(db, location) {
-    return db('reconnect_posts').where({ location });
+    return db
+      .raw(
+        `SELECT 
+        rp.id, 
+        rp.user_id, 
+        rp.title, 
+        rp.description, 
+        rp.device, 
+        rp.condition, 
+        rp.location, 
+        rp.date_created, 
+        rp.date_modified, 
+        ru.display_name as post_author
+      FROM reconnect_posts rp 
+      INNER JOIN reconnect_users ru ON rp.user_id = ru.id
+      WHERE rp.location = ? 
+      ORDER BY rp.date_modified DESC;`,
+        location
+      )
+      .then(result => result.rows);
   },
   getSearchPostsByText(db, searchText) {
-    return db('reconnect_posts').where(function () {
-      this.where('title', 'ilike', `%${searchText}%`).orWhere(
-        'description',
-        'ilike',
-        `%${searchText}%`
-      );
-    });
+    searchText = `%${searchText}%`;
+    return db
+      .raw(
+        `SELECT 
+        rp.id, 
+        rp.user_id, 
+        rp.title, 
+        rp.description, 
+        rp.device, 
+        rp.condition, 
+        rp.location, 
+        rp.date_created, 
+        rp.date_modified, 
+        ru.display_name as post_author
+      FROM reconnect_posts rp 
+      INNER JOIN reconnect_users ru ON rp.user_id = ru.id
+      WHERE rp.title ILIKE ? OR rp.description ILIKE ? 
+      ORDER BY rp.date_modified DESC;`,
+        [searchText, searchText]
+      )
+      .then(result => result.rows);
   }
 };
 
