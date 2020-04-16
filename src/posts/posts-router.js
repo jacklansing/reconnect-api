@@ -15,7 +15,31 @@ postsRouter
     if (!search && !location) {
       try {
         const posts = await PostsService.getAllPosts(req.app.get('db'));
-        res.json(posts.map(post => PostsService.serializePost(post)));
+        return res.json(posts.map(post => PostsService.serializePost(post)));
+      } catch (e) {
+        next(e);
+      }
+    }
+
+    if (!search && location) {
+      try {
+        const posts = await PostsService.getSearchPostsByLocation(
+          req.app.get('db'),
+          location
+        );
+        return res.json(posts.map(post => PostsService.serializePost(post)));
+      } catch (e) {
+        next(e);
+      }
+    }
+
+    if (search && !location) {
+      try {
+        const posts = await PostsService.getSearchPostsByText(
+          req.app.get('db'),
+          search
+        );
+        return res.json(posts.map(post => PostsService.serializePost(post)));
       } catch (e) {
         next(e);
       }
