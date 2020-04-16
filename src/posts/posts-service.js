@@ -8,7 +8,9 @@ const PostsService = {
     return db('reconnect_posts').where({ id }).first();
   },
   getPostsByUserId(db, user_id) {
-    return db('reconnect_posts').where({ user_id });
+    return db('reconnect_posts')
+      .where({ user_id })
+      .orderBy('date_modified', 'desc');
   },
   insertPost(db, newPost) {
     return db('reconnect_posts')
@@ -16,6 +18,12 @@ const PostsService = {
       .returning('*')
       .then(([post]) => post)
       .then(post => PostsService.getById(db, post.id));
+  },
+  updatePost(db, id, updatedPost) {
+    return db('reconnect_posts')
+      .where({ id })
+      .update(updatedPost)
+      .then(rowsAffected => rowsAffected[0]);
   },
   serializePost(post) {
     return {
@@ -26,7 +34,8 @@ const PostsService = {
       condition: post.condition,
       location: post.location,
       date_created: post.date_created,
-      user_id: post.user_id
+      user_id: post.user_id,
+      userCanEdit: post.userCanEdit
     };
   },
   getSearchPosts(db, searchText, location) {

@@ -15,7 +15,14 @@ postsRouter
     if (!search && !location) {
       try {
         const posts = await PostsService.getAllPosts(req.app.get('db'));
-        return res.json(posts.map(post => PostsService.serializePost(post)));
+        return res.json(
+          posts.map(post => {
+            post.user_id === req.user.id
+              ? (post.userCanEdit = true)
+              : (post.userCanEdit = false);
+            return PostsService.serializePost(post);
+          })
+        );
       } catch (e) {
         next(e);
       }
@@ -27,7 +34,14 @@ postsRouter
           req.app.get('db'),
           location
         );
-        return res.json(posts.map(post => PostsService.serializePost(post)));
+        return res.json(
+          posts.map(post => {
+            post.user_id === req.user.id
+              ? (post.userCanEdit = true)
+              : (post.userCanEdit = false);
+            return PostsService.serializePost(post);
+          })
+        );
       } catch (e) {
         next(e);
       }
@@ -39,7 +53,14 @@ postsRouter
           req.app.get('db'),
           search
         );
-        return res.json(posts.map(post => PostsService.serializePost(post)));
+        return res.json(
+          posts.map(post => {
+            post.user_id === req.user.id
+              ? (post.userCanEdit = true)
+              : (post.userCanEdit = false);
+            return PostsService.serializePost(post);
+          })
+        );
       } catch (e) {
         next(e);
       }
@@ -51,7 +72,14 @@ postsRouter
         search,
         location
       );
-      res.json(posts.map(post => PostsService.serializePost(post)));
+      res.json(
+        posts.map(post => {
+          post.user_id === req.user.id
+            ? (post.userCanEdit = true)
+            : (post.userCanEdit = false);
+          return PostsService.serializePost(post);
+        })
+      );
     } catch (e) {
       next(e);
     }
@@ -87,6 +115,49 @@ postsRouter
     } catch (e) {
       next(e);
     }
+  })
+  .patch(bodyParser, async (req, res, next) => {
+    const { id, title, description, device, condition, location } = req.body;
+
+    const updatedPost = {
+      id,
+      title,
+      description,
+      device,
+      condition,
+      location
+    };
+    console.log('updated post is', updatedPost);
+    for (const [key, value] of Object.entries(updatedPost)) {
+      if (value == null) {
+        return res.status(400).json({
+          error: `Missing '${key}' in request body`
+        });
+      }
+    }
+
+    try {
+      const postToEdit = await PostsService.getById(req.app.get('db'), id);
+
+      if (postToEdit.user_id !== req.user.id) {
+        return res
+          .status(401)
+          .json({ error: `You are not authorized to modify this post` });
+      }
+
+      await PostsService.updatePost(req.app.get('db'), id, {
+        title,
+        description,
+        device,
+        condition,
+        location,
+        date_modified: 'now()'
+      });
+
+      res.status(204).end();
+    } catch (e) {
+      next(e);
+    }
   });
 
 postsRouter
@@ -105,7 +176,12 @@ postsRouter
           error: `Could not find any posts for this user.`
         });
       }
-      res.json(posts.map(post => PostsService.serializePost(post)));
+      res.json(
+        posts.map(post => {
+          post.userCanEdit = true;
+          return PostsService.serializePost(post);
+        })
+      );
     } catch (e) {
       next(e);
     }
