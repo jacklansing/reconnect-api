@@ -7,6 +7,9 @@ const PostsService = {
   getById(db, id) {
     return db('reconnect_posts').where({ id }).first();
   },
+  getPostsByUserId(db, user_id) {
+    return db('reconnect_posts').where({ user_id });
+  },
   insertPost(db, newPost) {
     return db('reconnect_posts')
       .insert(newPost)

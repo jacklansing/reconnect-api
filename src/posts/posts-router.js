@@ -88,4 +88,26 @@ postsRouter
       next(e);
     }
   });
+
+postsRouter
+  .route('/user-posts')
+  .all(requireAuth)
+  .get(async (req, res, next) => {
+    const user_id = req.user.id;
+
+    try {
+      const posts = await PostsService.getPostsByUserId(
+        req.app.get('db'),
+        user_id
+      );
+      if (!posts) {
+        return res.status(404).json({
+          error: `Could not find any posts for this user.`
+        });
+      }
+      res.json(posts.map(post => PostsService.serializePost(post)));
+    } catch (e) {
+      next(e);
+    }
+  });
 module.exports = postsRouter;
