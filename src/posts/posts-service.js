@@ -5,7 +5,9 @@ const PostsService = {
     return db
       .raw(
         `SELECT 
-          rp.id, rp.title, 
+          rp.id, 
+          rp.user_id,
+          rp.title, 
           rp.description, 
           rp.device, 
           rp.condition, 
@@ -63,6 +65,7 @@ const PostsService = {
       .raw(
         `SELECT 
           rp.id, 
+          rp.user_id, 
           rp.title, 
           rp.description, 
           rp.device, 
@@ -85,6 +88,7 @@ const PostsService = {
       .raw(
         `SELECT 
         rp.id, 
+        rp.user_id, 
         rp.title, 
         rp.description, 
         rp.device, 
@@ -107,6 +111,7 @@ const PostsService = {
       .raw(
         `SELECT 
         rp.id, 
+        rp.user_id, 
         rp.title, 
         rp.description, 
         rp.device, 
