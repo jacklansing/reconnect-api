@@ -43,7 +43,7 @@ const PostsService = {
       .then(rowsAffected => rowsAffected[0]);
   },
   deletePost(db, id) {
-    return db('reconnect_posts').where({ id }).delete();
+    return db('reconnect_posts').where({ id }).del();
   },
   serializePost(post) {
     return {

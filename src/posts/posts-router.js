@@ -165,7 +165,7 @@ postsRouter
   .all(requireAuth)
   .delete(async (req, res, next) => {
     try {
-      PostsService.deletePost(req.app.get('db'), req.param.post_id);
+      await PostsService.deletePost(req.app.get('db'), req.params.post_id);
       res.status(204).end();
     } catch (e) {
       next(e);
