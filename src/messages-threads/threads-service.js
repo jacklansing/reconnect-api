@@ -1,3 +1,5 @@
+const xss = require('xss');
+
 const ThreadsService = {
   postNewThead(db, participants) {
     return db('reconnect_messages_threads')
@@ -48,6 +50,25 @@ const ThreadsService = {
         [id]
       )
       .then(result => result.rows);
+  },
+  serializeThread(thread) {
+    return {
+      thread_id: thread.thread_id,
+      content: xss(thread.content),
+      author_id: thread.author_id,
+      date_created: thread.date_created,
+      display_name: xss(thread.display_name)
+    };
+  },
+  serializeThreadMesssages(message) {
+    return {
+      id: message.id,
+      content: xss(message.content),
+      thread_id: message.thread_id,
+      author_id: message.author_id,
+      date_created: message.date_created,
+      display_name: xss(message.display_name)
+    };
   }
 };
 

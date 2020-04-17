@@ -41,7 +41,7 @@ threadsRouter
         req.app.get('db'),
         userId
       );
-      res.json(threads);
+      res.json(threads.map(thread => ThreadsService.serializeThread(thread)));
     } catch (e) {
       next(e);
     }
@@ -63,8 +63,11 @@ threadsRouter
           error: `No messages found for thread with id ${thread_id}`
         });
       }
-
-      res.json(messages);
+      res.json(
+        messages.map(message =>
+          ThreadsService.serializeThreadMesssages(message)
+        )
+      );
     } catch (e) {
       next(e);
     }
