@@ -4,9 +4,9 @@ TRUNCATE reconnect_users, reconnect_posts, reconnect_messages, reconnect_message
 
 INSERT INTO reconnect_users (user_name, password, display_name, user_type)
 VALUES
-('picard', 'ncc1701', 'Jean-Luc', 'Donor'),
-('klingonw', 'password', 'Worf', 'Seeking'),
-('troi123', 'farpoint87', 'Deanna', 'Seeking');
+('picard', '$2a$12$CU1KC3QClZKVMGVYQa/mieaV5GNniD32Y.vOdNghzlDoCqyNl/SfC', 'Jean-Luc', 'Donor'),
+('klingonw', '$2a$12$Qh.8o4Ki7cfW3WhDxx65cuD39qxpZmCBfPcYIJdCxL.L4idCMtXje', 'Worf', 'Seeking'),
+('troi123', '$2a$12$TqqO2Xqi1JgTtx50NqT7o.7PB1.wVpTN7evmqBRsI.CsFzdPyXyEq', 'Deanna', 'Seeking');
 
 INSERT INTO reconnect_posts (title, description, device, condition, location, user_id)
 VALUES
