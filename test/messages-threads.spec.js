@@ -1,9 +1,8 @@
 const knex = require('knex');
 const app = require('../src/app');
 const helpers = require('./test-helpers');
-const ThreadsService = require('../src/messages-threads/threads-service');
 
-describe.only('/api/posts endpoints', function () {
+describe('/api/threads endpoints', function () {
   let db;
 
   const {
