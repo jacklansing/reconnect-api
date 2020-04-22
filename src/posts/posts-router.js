@@ -127,7 +127,6 @@ postsRouter
       condition,
       location
     };
-    console.log('updated post is', updatedPost);
     for (const [key, value] of Object.entries(updatedPost)) {
       if (value == null) {
         return res.status(400).json({
