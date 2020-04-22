@@ -164,6 +164,15 @@ postsRouter
   .all(requireAuth)
   .delete(async (req, res, next) => {
     try {
+      const post = await PostsService.getById(
+        req.app.get('db'),
+        req.params.post_id
+      );
+
+      if (post.user_id !== req.user.id) {
+        return res.status(401).json({ error: 'Unauthorized request' });
+      }
+
       await PostsService.deletePost(req.app.get('db'), req.params.post_id);
       res.status(204).end();
     } catch (e) {

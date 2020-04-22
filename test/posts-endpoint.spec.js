@@ -174,4 +174,105 @@ describe.only('/api/posts endpoints', function () {
         );
     });
   });
+
+  describe('PATCH /api/posts', () => {
+    beforeEach('insert data', () =>
+      helpers.seedPostsAndMessages(
+        db,
+        testUsers,
+        testPosts,
+        testThreads,
+        testMessages
+      )
+    );
+
+    it(`responds 204 with successful post update`, () => {
+      const updatedPost = {
+        id: 1,
+        title: 'Updated post title',
+        description: 'Updated post descrtipion',
+        device: 'Macbook',
+        condition: 'damaged',
+        location: 'Schenectady, NY'
+      };
+
+      return supertest(app)
+        .patch('/api/posts')
+        .set('authorization', helpers.makeAuthHeader(testUsers[0]))
+        .send(updatedPost)
+        .expect(204);
+    });
+  });
+
+  describe('DELETE /api/posts/:post_id', () => {
+    beforeEach('insert data', () =>
+      helpers.seedPostsAndMessages(
+        db,
+        testUsers,
+        testPosts,
+        testThreads,
+        testMessages
+      )
+    );
+
+    it(`responds 204 when post successfully deleted`, () => {
+      const postToDelete = testPosts[0];
+      const postAuthor = testUsers.find(
+        user => user.id === postToDelete.user_id
+      );
+      return supertest(app)
+        .delete(`/api/posts/${postToDelete.id}`)
+        .set('authorization', helpers.makeAuthHeader(postAuthor))
+        .expect(204);
+    });
+
+    it(`responds '401 Unauthorized request' when post does not belong to user`, () => {
+      // Requires the first post in fixtures to have an author (user_id)
+      // different from the one specified below.
+      const postToDelete = testPosts[0];
+      const invalidPostAuthor = testUsers[3];
+
+      return supertest(app)
+        .delete(`/api/posts/${postToDelete.id}`)
+        .set('authorization', helpers.makeAuthHeader(invalidPostAuthor))
+        .expect(401, { error: 'Unauthorized request' });
+    });
+  });
+
+  describe('GET /api/posts/user-posts', () => {
+    context(`Given the user in question has posts`, () => {
+      beforeEach('insert data', () =>
+        helpers.seedPostsAndMessages(
+          db,
+          testUsers,
+          testPosts,
+          testThreads,
+          testMessages
+        )
+      );
+
+      it(`responds with a list of only the users posts`, () => {
+        const testUser = testUsers[0];
+        const expectedPosts = testPosts
+          .map(post => helpers.makeExpectedPost(testUser, testUsers, post))
+          .filter(post => post.user_id === testUser.id);
+
+        // On this response we do not give back a post author, since
+        // it should only show posts matching that user_id anyway.
+        const userPosts = expectedPosts.map(post => ({
+          ...post,
+          post_author: ''
+        }));
+
+        return supertest(app)
+          .get('/api/posts/user-posts')
+          .set('authorization', helpers.makeAuthHeader(testUser))
+          .expect(200)
+          .expect(res => {
+            expect(res.body).to.be.an('array');
+            expect(res.body).to.eql(userPosts);
+          });
+      });
+    });
+  });
 });
