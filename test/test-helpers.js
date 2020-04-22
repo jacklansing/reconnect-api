@@ -211,6 +211,7 @@ module.exports = {
   makeThreadsArray,
   makeMessagesArray,
   makeFixtures,
+  makeAuthHeader,
   cleanTables,
   seedPostsAndMessages
 };
