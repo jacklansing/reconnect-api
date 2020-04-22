@@ -274,5 +274,17 @@ describe.only('/api/posts endpoints', function () {
           });
       });
     });
+    context(`Given the user has no posts`, () => {
+      beforeEach('insert data', () =>
+        helpers.seedPostsAndMessages(db, testUsers)
+      );
+
+      it(`responds 404 'Could not find any posts for this user.'`, () => {
+        return supertest(app)
+          .get('/api/posts/user-posts')
+          .set('authorization', helpers.makeAuthHeader(testUsers[0]))
+          .expect(404, { error: 'Could not find any posts for this user.' });
+      });
+    });
   });
 });
