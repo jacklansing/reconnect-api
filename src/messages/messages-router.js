@@ -33,10 +33,7 @@ messagesRouter
       // For use client-side
       const display_name = req.user.display_name;
       message.display_name = display_name;
-      res
-        .status(201)
-        .location(path.posix.join(req.originalUrl, `/${message.id}`))
-        .json(MessagesService.serializeMessage(message));
+      res.status(201).json(MessagesService.serializeMessage(message));
     } catch (e) {
       next(e);
     }

@@ -127,7 +127,6 @@ postsRouter
       condition,
       location
     };
-    console.log('updated post is', updatedPost);
     for (const [key, value] of Object.entries(updatedPost)) {
       if (value == null) {
         return res.status(400).json({
@@ -165,6 +164,15 @@ postsRouter
   .all(requireAuth)
   .delete(async (req, res, next) => {
     try {
+      const post = await PostsService.getById(
+        req.app.get('db'),
+        req.params.post_id
+      );
+
+      if (post.user_id !== req.user.id) {
+        return res.status(401).json({ error: 'Unauthorized request' });
+      }
+
       await PostsService.deletePost(req.app.get('db'), req.params.post_id);
       res.status(204).end();
     } catch (e) {
@@ -183,7 +191,7 @@ postsRouter
         req.app.get('db'),
         user_id
       );
-      if (!posts) {
+      if (!posts.length) {
         return res.status(404).json({
           error: `Could not find any posts for this user.`
         });
