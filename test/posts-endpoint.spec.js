@@ -2,7 +2,7 @@ const knex = require('knex');
 const app = require('../src/app');
 const helpers = require('./test-helpers');
 
-describe.only('/api/posts endpoints', function () {
+describe('/api/posts endpoints', function () {
   let db;
 
   const {
