@@ -188,6 +188,22 @@ function seedPostsAndMessages(
   });
 }
 
+function makeExpectedPost(user, allUsers, post) {
+  const postAuthor = allUsers.find(user => user.id === post.user_id);
+  return {
+    id: post.id,
+    user_id: postAuthor.id,
+    post_author: postAuthor.display_name,
+    title: post.title,
+    description: post.description,
+    device: post.device,
+    condition: post.condition,
+    location: post.location,
+    date_created: post.date_created,
+    userCanEdit: user.id === post.user_id
+  };
+}
+
 function makeFixtures() {
   const testUsers = makeUsersArray();
   const testPosts = makePostsArray(testUsers);
@@ -212,6 +228,8 @@ module.exports = {
   makeMessagesArray,
   makeFixtures,
   makeAuthHeader,
+  makeExpectedPost,
   cleanTables,
-  seedPostsAndMessages
+  seedPostsAndMessages,
+  seedUsersTable
 };
