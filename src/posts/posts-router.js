@@ -191,11 +191,7 @@ postsRouter
         req.app.get('db'),
         user_id
       );
-      if (!posts.length) {
-        return res.status(404).json({
-          error: `Could not find any posts.`
-        });
-      }
+
       res.json(
         posts.map(post => {
           post.userCanEdit = true;
