@@ -279,11 +279,11 @@ describe('/api/posts endpoints', function () {
         helpers.seedPostsAndMessages(db, testUsers)
       );
 
-      it(`responds 404 'Could not find any posts for this user.'`, () => {
+      it(`responds 404 'Could not find any posts.'`, () => {
         return supertest(app)
           .get('/api/posts/user-posts')
           .set('authorization', helpers.makeAuthHeader(testUsers[0]))
-          .expect(404, { error: 'Could not find any posts for this user.' });
+          .expect(404, { error: 'Could not find any posts.' });
       });
     });
   });

@@ -193,7 +193,7 @@ postsRouter
       );
       if (!posts.length) {
         return res.status(404).json({
-          error: `Could not find any posts for this user.`
+          error: `Could not find any posts.`
         });
       }
       res.json(
