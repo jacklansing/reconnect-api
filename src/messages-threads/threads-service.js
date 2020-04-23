@@ -18,22 +18,22 @@ const ThreadsService = {
   },
   getLatestThreadMessage(db, id) {
     /* This query retrieves only the very latest message for each
-    unique thread or conversation the user has going. This concise
-    solution is all thanks to the DISTINCT ON clause in Postgres. */
+    unique thread or conversation the user has going. This
+    solution is thanks to the DISTINCT ON clause in Postgres. */
     return db
       .raw(
         `
-      SELECT * FROM (
-        SELECT DISTINCT ON (m.thread_id) 
-        m.thread_id, m.content, m.author_id, m.date_created, u.display_name
-        FROM reconnect_messages m INNER JOIN reconnect_messages_threads t  
-        ON m.thread_id = t.id 
-        INNER JOIN reconnect_users u ON t.recipient_id = u.id 
-        WHERE t.recipient_id = ? OR t.author_id = ? 
-        ORDER BY m.thread_id, m.date_created DESC
-      ) t ORDER BY date_created DESC;
+        SELECT * FROM (
+          SELECT DISTINCT ON (m.thread_id) 
+          m.thread_id, m.content, m.author_id, m.date_created, u.display_name
+          FROM reconnect_messages m INNER JOIN reconnect_messages_threads t  
+          ON m.thread_id = t.id 
+          INNER JOIN reconnect_users u ON (CASE WHEN t.recipient_id = ? THEN t.author_id = u.id ELSE t.recipient_id = u.id END)
+          WHERE t.recipient_id = ? OR t.author_id = ? 
+          ORDER BY m.thread_id, m.date_created DESC
+        ) t ORDER BY date_created DESC;
       `,
-        [id, id]
+        [id, id, id]
       )
       .then(result => result.rows);
   },
