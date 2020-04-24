@@ -1,5 +1,9 @@
 # Re-Connect Server
 
+Node.js/Express server for the Re-Connect client.
+
+Link to client repo: [https://github.com/jacklansing/reconnect-api](https://github.com/jacklansing/reconnect-api)
+
 ## Getting set up
 
 - Install dependencies: `npm install`
@@ -33,7 +37,7 @@ Run prettier formatting `npm run format`
 
 ## Deploying
 
-When your new project is ready for deployment, add a new Heroku application with `heroku create`. This will make a new git remote called "heroku" and you can then `npm run deploy` which will push to this remote's master branch.
+When your new project is ready for deployment, add a new Heroku application with `heroku create` (assuming you have the heroku CLI). This will make a new git remote called "heroku" and you can then `npm run deploy` which will push to this remote's master branch.
 
 ## API Info
 
@@ -98,7 +102,7 @@ By default this route will return all posts. Optional query parameters include s
 - `Albany, NY`
 - `Schenectady, NY`
 
-Example resposne:
+Example response:
 
 ```
 [
@@ -164,7 +168,9 @@ Example response:
 
 ### POST /api/posts
 
-Creates a new post. All fields are required, but for the `condition`, `device`, and `location` fields you can provide sensible defaults as there are only certain valid choices. Response includes the newly created post with additional info.
+Creates a new post. All fields are required, but for the `condition`, `device`, and `location` fields you can provide sensible defaults as there are only certain valid choices based on the column setup in the database. Response includes the newly created post with additional info.
+
+Valid options by default for each:
 
 For `condition` :
 
@@ -214,7 +220,7 @@ Example response:
 
 ### PATCH /api/posts
 
-Used to update existing posts. Requires the same information as creating a new post, but also requires the `id` of the post to be included. If the authenticated user does not match the `user_id` field of the post, you will receive an error: `401 'You are not authorized to modify this post'`
+Used to update existing posts. Requires the same information as creating a new post, but also requires the `id` of the post to be included. If the authenticated user `id` does not match the `user_id` field of the post, you will receive an error: `401 'You are not authorized to modify this post'`.
 
 On success you will receive a `204 No Content` response.
 
@@ -232,9 +238,9 @@ Example request:
 
 ### DELETE /api/post/{post_id}
 
-Used to delete a post by it's `id`. If the authenticated user's `id` does not match the post's `user_id` it will result in an error: `401 Unauthorized request`
+Used to delete a post by it's `id`. If the authenticated user's `id` does not match the post's `user_id` it will result in an error: `401 Unauthorized request`.
 
-On success you will get a `204 No Content` response.
+On success you will receive a `204 No Content` response.
 
 ### POST /api/threads
 
@@ -261,7 +267,7 @@ Example response:
 
 ### GET /api/threads
 
-Respond with a list of each unique message thread the currently authenticated user has, along with the most recent message between those two users.
+Respond with a list of each unique message thread the currently authenticated user has, along with the most recent message between those two users. The `display_name` field will be the display name of the user the message thread is with.
 
 Responds with an empty array if none are found.
 
