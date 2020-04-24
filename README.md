@@ -2,7 +2,16 @@
 
 Node.js/Express server for the Re-Connect client.
 
-Link to client repo: [https://github.com/jacklansing/reconnect-api](https://github.com/jacklansing/reconnect-api)
+Link to client repo: [https://github.com/jacklansing/reconnect-client](https://github.com/jacklansing/reconnect-client)
+
+### Technologies used
+
+- `React` front-end
+- `Node.js` server
+- `PostgreSQL` database management
+- `Express` for route handling
+- `Mocha/Chai` for back-end testing
+- `Jest` front-end testing
 
 ## Getting set up
 
