@@ -46,11 +46,10 @@ const PostsService = {
     return db('reconnect_posts').where({ id }).del();
   },
   serializePost(post) {
-    return {
+    const serializedPost = {
       id: post.id,
       title: xss(post.title),
       description: xss(post.description),
-      post_author: xss(post.post_author),
       device: post.device,
       condition: post.condition,
       location: post.location,
@@ -58,6 +57,10 @@ const PostsService = {
       user_id: post.user_id,
       userCanEdit: post.userCanEdit
     };
+    if (post.post_author) {
+      serializedPost.post_author = xss(post.post_author);
+    }
+    return serializedPost;
   },
   getSearchPosts(db, searchText, location) {
     searchText = `%${searchText}%`;
