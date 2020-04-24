@@ -1,3 +1,24 @@
+# Re-Connect Server
+
+## Getting set up
+
+- Install dependencies: `npm install`
+- Create dev and test databases: `createdb reconnect`, `createdb reconnect-test`
+- Create database user: `createuser reconnect`
+- Grant privileges to new user in `psql`:
+  - `GRANT ALL PRIVILEGES ON DATABASE reconnect TO reconnect`
+  - `GRANT ALL PRIVILEGES ON DATABASE reconnect-test TO reconnect`
+- Prepare env file: `cp example.env .env`
+- Replace values in `.env` with your custom values.
+- Bootstrap dev database: `npm run migrate`
+- Bootstrap test database: `npm run migrate:test`
+
+For tests involving time to run properly, make sure your Postgres database is configured to run in the UTC timezone.
+
+To seed the development database run: `psql -U reconnect -d reconnect -a -f seeds/seed.reconnect_tables.sql`
+
+To clear seed data run: `psql -U reconnect -d reconnect -a -f seeds/trunc.reconnect_tables.sql`
+
 ## Scripts
 
 Start the application `npm start`
