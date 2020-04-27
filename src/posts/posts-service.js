@@ -14,6 +14,7 @@ const PostsService = {
           rp.location, 
           rp.date_created, 
           rp.date_modified, 
+          rp.image_url, 
           ru.display_name as post_author
         FROM reconnect_posts rp 
         INNER JOIN reconnect_users ru ON rp.user_id = ru.id 
@@ -60,6 +61,9 @@ const PostsService = {
     if (post.post_author) {
       serializedPost.post_author = xss(post.post_author);
     }
+    if (post.image_url) {
+      serializedPost.image_url = xss(post.image_url);
+    }
     return serializedPost;
   },
   getSearchPosts(db, searchText, location) {
@@ -76,6 +80,7 @@ const PostsService = {
           rp.location, 
           rp.date_created, 
           rp.date_modified, 
+          rp.image_url,
           ru.display_name as post_author
         FROM reconnect_posts rp 
         INNER JOIN reconnect_users ru ON rp.user_id = ru.id
@@ -99,6 +104,7 @@ const PostsService = {
         rp.location, 
         rp.date_created, 
         rp.date_modified, 
+        rp.image_url, 
         ru.display_name as post_author
       FROM reconnect_posts rp 
       INNER JOIN reconnect_users ru ON rp.user_id = ru.id
@@ -122,6 +128,7 @@ const PostsService = {
         rp.location, 
         rp.date_created, 
         rp.date_modified, 
+        rp.image_url, 
         ru.display_name as post_author
       FROM reconnect_posts rp 
       INNER JOIN reconnect_users ru ON rp.user_id = ru.id

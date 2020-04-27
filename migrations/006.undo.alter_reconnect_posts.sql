@@ -1,0 +1,1 @@
+ALTER TABLE reconnect_posts DROP COLUMN IF EXISTS image_url;

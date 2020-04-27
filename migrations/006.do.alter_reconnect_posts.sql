@@ -1,0 +1,1 @@
+ALTER TABLE reconnect_posts ADD COLUMN image_url TEXT;

@@ -1,10 +1,15 @@
 const express = require('express');
-const path = require('path');
 const PostsService = require('./posts-service');
 const { requireAuth } = require('../middleware/jwt-auth');
 
+const path = require('path');
+const {
+  uploader,
+  cloudinaryConfig
+} = require('../middleware/cloudinary-config');
+const { multerUploads, dataUri } = require('../middleware/multer-upload');
+
 const postsRouter = express.Router();
-const bodyParser = express.json();
 
 postsRouter
   .route('/')
@@ -84,7 +89,7 @@ postsRouter
       next(e);
     }
   })
-  .post(bodyParser, async (req, res, next) => {
+  .post(multerUploads, cloudinaryConfig, async (req, res, next) => {
     const { title, description, device, condition, location } = req.body;
 
     const newPost = {
@@ -106,6 +111,17 @@ postsRouter
     newPost.user_id = req.user.id;
 
     try {
+      if (req.file) {
+        const file = dataUri(req).content;
+        const image = await uploader.upload(file, {
+          width: 1024,
+          height: 768,
+          crop: 'fill'
+        });
+        const image_url = image.secure_url;
+        newPost.image_url = image_url;
+      }
+
       const post = await PostsService.insertPost(req.app.get('db'), newPost);
 
       res
@@ -116,8 +132,16 @@ postsRouter
       next(e);
     }
   })
-  .patch(bodyParser, async (req, res, next) => {
-    const { id, title, description, device, condition, location } = req.body;
+  .patch(multerUploads, cloudinaryConfig, async (req, res, next) => {
+    const {
+      id,
+      title,
+      description,
+      device,
+      condition,
+      location,
+      previous_image_url
+    } = req.body;
 
     const updatedPost = {
       id,
@@ -136,6 +160,22 @@ postsRouter
     }
 
     try {
+      if (req.file) {
+        // Below we get just the public ID of the image off the URL
+        // which is required for deletion on cloudinary
+        await uploader.destroy(
+          previous_image_url.split('/').reverse()[0].split('.')[0]
+        );
+        const file = dataUri(req).content;
+        const image = await uploader.upload(file, {
+          width: 1024,
+          height: 768,
+          crop: 'fill'
+        });
+        const newImageUrl = image.secure_url;
+        updatedPost.image_url = newImageUrl;
+      }
+
       const postToEdit = await PostsService.getById(req.app.get('db'), id);
 
       if (postToEdit.user_id !== req.user.id) {
@@ -145,11 +185,7 @@ postsRouter
       }
 
       await PostsService.updatePost(req.app.get('db'), id, {
-        title,
-        description,
-        device,
-        condition,
-        location,
+        ...updatedPost,
         date_modified: 'now()'
       });
 
@@ -162,7 +198,7 @@ postsRouter
 postsRouter
   .route('/:post_id')
   .all(requireAuth)
-  .delete(async (req, res, next) => {
+  .delete(cloudinaryConfig, async (req, res, next) => {
     try {
       const post = await PostsService.getById(
         req.app.get('db'),
@@ -173,6 +209,11 @@ postsRouter
         return res.status(401).json({ error: 'Unauthorized request' });
       }
 
+      if (post.image_url) {
+        await uploader.destroy(
+          post.image_url.split('/').reverse()[0].split('.')[0]
+        );
+      }
       await PostsService.deletePost(req.app.get('db'), req.params.post_id);
       res.status(204).end();
     } catch (e) {
