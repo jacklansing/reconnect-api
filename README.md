@@ -23,6 +23,7 @@ Link to client repo: [https://github.com/jacklansing/reconnect-client](https://g
   - `GRANT ALL PRIVILEGES ON DATABASE reconnect-test TO reconnect`
 - Prepare env file: `cp example.env .env`
 - Replace values in `.env` with your custom values.
+- Note: image uploads require a cloudinary account. The required values are shown in the `exameple.env` file.
 - Bootstrap dev database: `npm run migrate`
 - Bootstrap test database: `npm run migrate:test`
 
@@ -177,7 +178,11 @@ Example response:
 
 ### POST /api/posts
 
-Creates a new post. All fields are required, but for the `condition`, `device`, and `location` fields you can provide sensible defaults as there are only certain valid choices based on the column setup in the database. Response includes the newly created post with additional info.
+Expects multipart/form-data.
+
+Creates a new post. All fields except for `image` are required, but for the `condition`, `device`, and `location` fields you can provide sensible defaults as there are only certain valid choices based on the column setup in the database. Response includes the newly created post with additional info.
+
+If no `image` is provided, by default the client will show it's own filler image indicating that none was provided.
 
 Valid options by default for each:
 
@@ -203,13 +208,13 @@ For `location` :
 Example request:
 
 ```
-{
-	"title": "iPhone 5",
-	"description": "Found this in my desk. Yours if you want it",
-	"device": "iPhone",
-	"condition": "okay",
-	"location": "Albany, NY"
-}
+  title: iPhone5
+  description: Found in my desk. Yours if you want it!
+  device: iPhone
+  condition: okay
+  location: Albany, NY
+  image: (binary)
+
 ```
 
 Example response:
@@ -223,11 +228,14 @@ Example response:
   "condition": "okay",
   "location": "Albany, NY",
   "date_created": "2020-04-23T23:52:21.740Z",
+  "image_url": "https://res.cloudinary.com/re-connect/image/upload/v1588013458/jzpkiptecybsulauctpu.png"
   "user_id": 8
 }
 ```
 
 ### PATCH /api/posts
+
+Expects multipart/form-data.
 
 Used to update existing posts. Requires the same information as creating a new post, but also requires the `id` of the post to be included. If the authenticated user `id` does not match the `user_id` field of the post, you will receive an error: `401 'You are not authorized to modify this post'`.
 
@@ -236,13 +244,13 @@ On success you will receive a `204 No Content` response.
 Example request:
 
 ```
-{   "id": 36,
-	"title": "iPhone 5",
-	"description": "Update: found this in my HOME desk. Yours if you want it",
-	"device": "iPhone",
-	"condition": "okay",
-	"location": "Albany, NY"
-}
+  title: iPhone5
+  description: Found in my HOME desk. Yours if you want it!
+  device: iPhone
+  condition: okay
+  location: Albany, NY
+  image: (binary)
+
 ```
 
 ### DELETE /api/post/{post_id}
