@@ -111,6 +111,7 @@ By default this route will return all posts. Optional query parameters include s
 
 - `Albany, NY`
 - `Schenectady, NY`
+- `Troy, NY`
 
 Example response:
 
@@ -204,6 +205,7 @@ For `location` :
 
 - `Albany, NY`
 - `Schenectady, NY`
+- `Troy, NY`
 
 Example request:
 
