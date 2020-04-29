@@ -1,0 +1,1 @@
+ALTER TYPE device_location ADD VALUE 'Troy, NY';
