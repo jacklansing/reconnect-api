@@ -139,7 +139,12 @@ describe('/api/posts endpoints', function () {
       return supertest(app)
         .post('/api/posts')
         .set('authorization', helpers.makeAuthHeader(testUsers[0]))
-        .send(validPost)
+        .field('Content-Type', 'multipart/form-data')
+        .field('title', validPost.title)
+        .field('description', validPost.description)
+        .field('device', validPost.device)
+        .field('condition', validPost.condition)
+        .field('location', validPost.location)
         .expect(201)
         .expect(res => {
           expect(res.body).to.have.property('id');
@@ -199,7 +204,13 @@ describe('/api/posts endpoints', function () {
       return supertest(app)
         .patch('/api/posts')
         .set('authorization', helpers.makeAuthHeader(testUsers[0]))
-        .send(updatedPost)
+        .field('Content-Type', 'multipart/form-data')
+        .field('id', updatedPost.id)
+        .field('title', updatedPost.title)
+        .field('description', updatedPost.description)
+        .field('device', updatedPost.device)
+        .field('condition', updatedPost.condition)
+        .field('location', updatedPost.location)
         .expect(204);
     });
   });
@@ -259,10 +270,10 @@ describe('/api/posts endpoints', function () {
 
         // On this response we do not give back a post author, since
         // it should only show posts matching that user_id anyway.
-        const userPosts = expectedPosts.map(post => ({
-          ...post,
-          post_author: ''
-        }));
+        const userPosts = expectedPosts.map(post => {
+          delete post.post_author;
+          return post;
+        });
 
         return supertest(app)
           .get('/api/posts/user-posts')
